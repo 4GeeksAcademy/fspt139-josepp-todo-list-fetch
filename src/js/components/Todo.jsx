@@ -1,19 +1,29 @@
 import React from 'react';
 
-const Todo = ({ tarea, onDelete }) => {
+const Todo = ({ tarea, onDelete, onComplete }) => {
 
 
   return (
     (tarea ?
       <li className="tarea">
         <span className="todo-text">{tarea}</span>
-        <button
-          className="borrar-btn"
-          onClick={onDelete}
-        >🗑️</button>
+        {((onComplete) ?
+          <button
+            className="complete-btn"
+            onClick={onComplete}
+          >✅</button>
+          : '')
+        }
+        {((onDelete) ?
+          <button
+            className="borrar-btn"
+            onClick={onDelete}
+          >🗑️</button>
+          : '')
+        }
       </li>
       :
-      <li className="todoEmpty">No hay tareas, añade una nueva</li>
+      <li className="todoEmpty">No hay tareas pendientes, añade una nueva</li>
     )
   );
 };

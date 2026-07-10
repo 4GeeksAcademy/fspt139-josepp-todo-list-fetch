@@ -22,8 +22,9 @@ const TodoList = () => {
     }
 
     const completarTarea = (agregar_index) => {
-        setTareas(tareas.filter((nombre, index) => index !== borrar_index))
-        setTareas(tareas.filter((nombre, index) => index !== borrar_index))
+        let _completada = tareas.filter((nombre, index) => index == agregar_index)
+        setTareasCompletadas([...tareasCompletadas, _completada])
+        setTareas(tareas.filter((nombre, index) => index !== agregar_index))
     }
 
     return (
@@ -37,24 +38,43 @@ const TodoList = () => {
                 onKeyUp={crearNuevaTarea}
             />
 
-            <ul className="todoList">
-                {tareas.length === 0 ? (
-                    <Todo/>                   
-                ) : (
-                    tareas.map((tarea, index) => (                        
-                        <Todo
-                            key={index}
-                            tarea={tarea}
-                            onDelete={() => borrarTarea(index)}
-                        />
-                    ))
-                )}
-            </ul>
+            <div className='mt-4'>
+                <h2 className='ps-5'>🗓️ Pendientes</h2>
+                <ul className="todoList">
+                    {tareas.length === 0 ? (
+                        <Todo />
+                    ) : (
+                        tareas.map((tarea, index) => (
+                            <Todo
+                                key={index}
+                                tarea={tarea}
+                                onDelete={() => borrarTarea(index)}
+                                onComplete={() => completarTarea(index)}
+                            />
+                        ))
+                    )}
+                </ul>
+            </div>
+            <hr />
+            <div className='mb-4'>
+                <h2 className='ps-5 text-success'>✔ Completadas</h2>
+                <ul className="doneList">
+                    {
+                        (tareasCompletadas.length !== 0) &&
+                        tareasCompletadas.map((tarea, index) => (
+                            <Todo
+                                key={index}
+                                tarea={tarea}
+                            />
+                        ))
+                    }
+                </ul>
+            </div>
 
             <div className="todoFooter">
                 {tareas.length} {tareas.length !== 1 ? 'tareas pendientes' : 'tarea pendiente'}
             </div>
-        </div>
+        </div >
 
     )
 }
