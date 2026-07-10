@@ -9,3 +9,130 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+
+body{
+      background-color: #f5f5f5;
+}
+
+h1{
+  font-size: 100px;
+  font-weight: 100;
+  text-align: center;
+  color: rgba(175, 47, 47, 0.15);
+  margin: 20px 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #4d4d4d;
+}
+
+
+.todo-card {
+  background: #fff;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 
+              0 25px 50px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.todo-card::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 50px;
+  overflow: hidden;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 
+              0 8px 0 -3px #f6f6f6, 
+              0 9px 1px -3px rgba(0, 0, 0, 0.2), 
+              0 16px 0 -6px #f6f6f6, 
+              0 17px 2px -6px rgba(0, 0, 0, 0.2);
+  z-index: -1;
+}
+
+.input {
+  width: 100%;
+  font-size: 24px;
+  font-family: inherit;
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.6em;
+  padding: 15px;
+  border: none;
+  box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
+}
+
+.input::placeholder {  
+  color: #e6e6e6;
+}
+.input:focus {
+  outline: none;
+}
+
+.todoList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarea {
+
+  font-size: 24px;
+  border-bottom: 1px solid #ededed;
+  display: flex;
+  align-items: center;
+  padding: 15px 15px 15px 60px;
+  background-color: #fff;
+}
+
+.todo-text {  
+  display: block;
+  line-height: 1.2;
+  transition: color 0.4s;
+  font-weight: 300;
+  flex-grow: 1;
+}
+
+.borrar-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #cc9a9a;
+  font-size: 15px;
+  cursor: pointer;
+  transition: color 0.2s ease-out;
+  padding: 0 10px;
+}
+
+.tarea:hover .borrar-btn {
+  display: block;
+}
+
+.borrar-btn:hover {
+  color: #af5b5e;
+}
+
+.todoEmpty {
+  padding: 15px;
+  text-align: center;
+  color: #777;
+  font-size: 18px;
+  border-bottom: 1px solid #ededed;
+  background-color: #fff;
+}
+
+.todoFooter {
+  color: #777;
+  padding: 10px 15px;
+  text-align: left;
+  font-size: 14px;
+  border-top: 1px solid #e6e6e6;
+  background-color: #fff;
+}
