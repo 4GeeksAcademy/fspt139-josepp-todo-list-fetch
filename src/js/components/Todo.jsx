@@ -2,6 +2,8 @@ import React from 'react';
 
 const Todo = ({ tarea, onDelete, onComplete }) => {
 
+  
+
 
   return (
     (tarea ?
