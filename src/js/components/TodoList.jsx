@@ -24,32 +24,24 @@ const TodoList = () => {
         recuperarTareas()
     }, [])
 
-
-
     const registrarUsuario = async () => {
-        const prompted_user = prompt('Escribe tu nombre de usuario para acceder')
-        setUser(prompted_user)
-        const response = await fetch(`https://playground.4geeks.com/todo/users/${prompted_user}`, {
-            method: 'POST'
-        })
-        let isOk = true
-        //console.log(response)
-        const data = await response.json()
-        //console.log(data)
-        if (!response.ok) {
-            const errorCode = response.status
-            if (errorCode !== 400) {
-                let _error = 'Error al registrar usuario'
-                if (data.detail) {
-                    _error = errorCode + ' ' + data.detail
+        try {
+
+            const prompted_user = prompt('Escribe tu nombre de usuario para acceder')
+            setUser(prompted_user)
+            const response = await fetch(`https://playground.4geeks.com/todo/users/${prompted_user}`, {
+                method: 'POST'
+            })
+            const data = await response.json()
+            if (!response.ok) {
+                const errorCode = response.status
+                if (errorCode !== 400) {
+                    throw new Error(data.detail ? `${response.status} ${data.detail}` : 'Error no identificado');
                 }
-                setErrorMessage(_error)
-                isOk = false
             }
-        }
-        //        console.log(isOk)
-        if (isOk) {
             recuperarTareas(prompted_user)
+        } catch (_error) {
+            setErrorMessage(_error.message || 'Error no identificado')
         }
     }
 
@@ -58,30 +50,29 @@ const TodoList = () => {
         let usuario = nombreUsuario || user;
 
         if (usuario) {
-            const response = await fetch(`https://playground.4geeks.com/todo/users/${usuario}`)
-            //console.log(response)
-            const data = await response.json()
-            //console.log(data)
-            if (!response.ok) {
-                const errorCode = response.status
-                let _error = 'Error no identificado'
-                if (data.detail) {
-                    _error = errorCode + ' ' + data.detail
-                }
-                setErrorMessage(_error)
-            } else {
-                setIsRegistered(true)
+            try {
+                const response = await fetch(`https://playground.4geeks.com/todo/users/${usuario}`)
+                const data = await response.json()
 
+                if (!response.ok) {
+                    throw new Error(data.detail ? `${response.status} ${data.detail}` : 'Error no identificado');
+                }
+
+                setIsRegistered(true)
                 const _tareasPendientes = data.todos.filter(t => t.is_done === false);
                 const _tareasCompletadas = data.todos.filter(t => t.is_done === true);
                 setTareas(_tareasPendientes);
                 setTareasCompletadas(_tareasCompletadas);
+
+            } catch (_error) {
+                setErrorMessage(_error.message || 'Error no identificado')
             }
+
         }
     }
 
-
     const crearNuevaTarea = async (e) => {
+
         if (e.keyCode === 13 && inputValue.trim() !== '') {
 
             const nuevaTarea = {
@@ -90,138 +81,99 @@ const TodoList = () => {
                 is_done: false
             };
 
-            //consultar/explicar diferencia y acceso a response desde el then
-            const response = await fetch(`https://playground.4geeks.com/todo/todos/${user}`, {
-                method: "POST",
-                body: JSON.stringify(nuevaTarea),
-                headers: {
-                    "Content-Type": "application/json"
+            //revision con try/catch
+            try {
+                const response = await fetch(`https://playground.4geeks.com/todo/todos/${user}`, {
+                    method: "POST",
+                    body: JSON.stringify(nuevaTarea),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                const data = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(data.detail ? `${response.status} ${data.detail}` : 'Error no identificado');
                 }
-            })
-                .then(resp => {
-                    //console.log(resp.ok); 
-                    //console.log(resp.status); 
 
-                    const data = resp.json()
-                    if (!resp.ok) {
-                        let _error = 'Error no identificado'
-                        if (data.detail) {
-                            _error = resp.status + ' ' + data.detail
-                        }
-                        setErrorMessage(_error)
-                        setErrorMessage("Error al crear la tarea");
-                        //abortar funcion
-                        return
-                    }
-                    return data;
-                })
-                .then(data => {
-                    if (data) {
-                        //console.log('then')
-                        recuperarTareas();
-                        setInputValue('');
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                });
-
-
-            /*
-
-            const response = await fetch(`https://playground.4geeks.com/todo/todos/${user}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(nuevaTarea)
-            });
-
-            if (response.ok) {
                 recuperarTareas();
                 setInputValue('');
-            } else {
-                const data = await response.json()
-                const errorCode = response.status
-                let _error = 'Error no identificado'
-                if (data.detail) {
-                    _error = errorCode + ' ' + data.detail
-                }
-                setErrorMessage(_error)
-                setErrorMessage("Error al crear la tarea");
+
+            } catch (_error) {
+                setErrorMessage(_error.message || 'Error no identificado')
             }
-                */
-            //setTareas([...tareas, inputValue.trim()])
-            //setInputValue('')
+
         }
     }
 
     const borrarTarea = async (borrar_id) => {
-        let isOk = true
-        const response = await fetch(`https://playground.4geeks.com/todo/todos/${borrar_id}`, {
-            method: 'DELETE'
-        })
-        if (!response.ok) {
-            const data = await response.json()
-            const errorCode = response.status
-            let _error = 'Error al eliminar tarea'
-            if (data.detail) {
-                _error = errorCode + ' ' + data.detail
+
+        try {
+            const response = await fetch(`https://playground.4geeks.com/todo/todos/${borrar_id}`, {
+                method: 'DELETE'
+            })
+            if (!response.ok) {
+                const data = await response.json()
+                throw new Error(data.detail ? `${response.status} ${data.detail}` : 'Error no identificado');
             }
-            setErrorMessage(_error)
-            isOk = false
-        }
-        //console.log(isOk)
-        if (isOk) {
             recuperarTareas()
+
+        } catch (_error) {
+            //console.log(_error)
+            setErrorMessage(_error.message || 'Error no identificado')
         }
 
     }
 
     const completarTarea = async (tarea_id) => {
-        const tareaActualizada = {
-            is_done: true
-        };
-        const response = await fetch(`https://playground.4geeks.com/todo/todos/${tarea_id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(tareaActualizada)
-        });
-
-        if (response.ok) {
-            recuperarTareas()
-        } else {
+        try {
+            const tareaActualizada = {
+                is_done: true
+            };
+            const response = await fetch(`https://playground.4geeks.com/todo/todos/${tarea_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tareaActualizada)
+            });
             const data = await response.json()
-            let _error = 'Error al actualizar la tarea'
-            if (data.detail) {
-                _error = errorCode + ' ' + data.detail
+
+            if (!response.ok) {
+                throw new Error(data.detail ? `${response.status} ${data.detail}` : 'Error no identificado');
             }
-            setErrorMessage(_error)
+
+            recuperarTareas()
+
+        } catch (_error) {
+            setErrorMessage(_error.message || 'Error no identificado')
         }
     }
-    /*
-    const completarTarea = (agregar_index) => {
-        let _completada = tareas.filter((nombre, index) => index == agregar_index)
-        setTareasCompletadas([...tareasCompletadas, _completada])
-        setTareas(tareas.filter((nombre, index) => index !== agregar_index))
-    }*/
 
-    const removeUsuario = async (e) => {
+    const removeUsuario = async (usuario) => {
 
-        let usuario = e.target.name
-        if (usuario) {
-            if (confirm(`Te dispones a eliminar todos los datos y tareas del usuario ${user}\n¿Continuar?`)) {
-                const response = await fetch(`https://playground.4geeks.com/todo/users/${usuario}`, {
-                    method: 'DELETE'
-                })
-                setUser('')
-                setIsRegistered(false)
+        try {
+            // let usuario = e.target.name
+            if (usuario) {
+                if (confirm(`Te dispones a eliminar todos los datos y tareas del usuario ${user}\n¿Continuar?`)) {
+                    const response = await fetch(`https://playground.4geeks.com/todo/users/${usuario}`, {
+                        method: 'DELETE'
+                    })
+
+                    //  const data = await response.json()
+                    /* if (!response.ok) {
+                         throw new Error(data.detail ? `${response.status} ${data.detail}` : 'Error no identificado');
+                     }*/
+
+                    setUser('')
+                    setIsRegistered(false)
+                    setErrorMessage('')
+                }
+
             }
+        } catch (_error) {
+            setErrorMessage(_error.message || 'Error no identificado')
         }
-
-
     }
 
 
@@ -295,7 +247,7 @@ const TodoList = () => {
                                 {tareas.length} {tareas.length !== 1 ? 'tareas pendientes' : 'tarea pendiente'}
                             </div>
                             <div>
-                                <button className='btn btn-secondary btn-sm' onClick={removeUsuario} name={user}>Eliminar usuario {user} y {tareas.length + tareasCompletadas.length} tareas</button>
+                                <button className='btn btn-secondary btn-sm' onClick={() => removeUsuario(user)}>Eliminar usuario {user} y {tareas.length + tareasCompletadas.length} tareas</button>
                             </div>
                         </div>
                     </div >
